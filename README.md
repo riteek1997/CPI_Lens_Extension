@@ -1,1 +1,66 @@
 # CPI_Lens_Extension
+
+-A Smart Browser Extension for SAP CPI (Integration Suite)
+
+CPI Lens is an open-source browser extension designed to enhance productivity, visibility, and operational efficiency for SAP CPI (Integration Suite) developers and support teams.
+
+Working with SAP CPI often involves repetitive navigation, limited runtime insights, and frequent context switching between tools. CPI Lens addresses these challenges by bringing *intuitive analytics, runtime insights, and developer utilities directly into the CPI UI*.
+
+---
+
+## 🚀 Why CPI Lens?
+
+SAP CPI is powerful, but daily development and support tasks can be time-consuming:
+- Finding failed or idle iFlows
+- Tracking message processing trends
+- Managing duplicates and test artifacts
+- Switching between external tools for formatting and schema work
+
+CPI Lens reduces this friction by surfacing *critical information instantly*, helping teams focus on what truly matters.
+
+---
+
+# ✨ Key Features
+
+### 📊 Intuitive Analytics
+- High-level insights into tenant usage and activity
+- Helps understand system behavior quickly
+
+### ❌ Failures
+- Quickly identify failed iFlows
+- Faster analysis during incident handling
+
+### ⭐ Favourites
+- Bookmark important iFlows
+- One-click access to business-critical integrations
+
+### 💤 Idle iFlows
+- Detect unused or inactive integrations
+- Improve tenant cleanliness and governance
+
+### 🧪 Duplicates & Test iFlows
+- Identify duplicate or test artifacts easily
+- Avoid confusion and reduce risk in productive tenants
+
+### 📈 Trends (MPL)
+- Message Processing Log (MPL) trends
+- Spot anomalies, spikes, or recurring patterns early
+
+### 🧰 Built-in Tools
+- XML / JSON formatters
+- Payload converters
+- XSD generator
+- No need to leave the CPI UI
+
+# License
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+
+
+👉 *GitHub Repository:* [Add link]  
+👉 *Browser Extension:* [Add Chrome / Edge link]
+
+---
+
+## 📌 Disclaimer
+CPI Lens is an independent open-source project and is not affiliated with or endorsed by SAP.
