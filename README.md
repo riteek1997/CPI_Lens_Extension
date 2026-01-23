@@ -66,12 +66,3 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 # License
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
-
-
-👉 *GitHub Repository:* [Add link]  
-👉 *Browser Extension:* [Add Chrome / Edge link]
-
----
-
-## 📌 Disclaimer
-CPI Lens is an independent open-source project and is not affiliated with or endorsed by SAP.
