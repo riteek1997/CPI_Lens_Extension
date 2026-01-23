@@ -1,6 +1,6 @@
 # CPI_Lens_Extension
 
--A Smart Browser Extension for SAP CPI (Integration Suite)
+-Smart Observability and analytics for SAP CPI (Integration Suite) iFlows. 
 
 CPI Lens is an open-source browser extension designed to enhance productivity, visibility, and operational efficiency for SAP CPI (Integration Suite) developers and support teams.
 
