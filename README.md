@@ -76,7 +76,27 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
    - Enable Developer mode
    - Click Load unpacked.
    - Select the root folder of the cloned/downloaded repository.
-✅ CPI Lens is now installed and ready to use.
+   - ✅ CPI Lens is now installed and ready to use.
+
+# Usage 
+  Open your browser (Chrome/Edge)
+  Log in to the SAP Integration Suite tenant.
+  Once logged in, the CPI Lens icon will appear in the bottom right corner as shown in the below image.
+  <img width="1913" height="866" alt="image" src="https://github.com/user-attachments/assets/a250e458-3efa-439f-b727-6427331bac5a" />
+
+  Click to open the Overlay, where you will be able to access all features. 
+  CPI Lens is available in Light and Dark Mode.
+  Light Mode:
+  <img width="1918" height="870" alt="Screenshot 2026-01-20 111751" src="https://github.com/user-attachments/assets/d612bae9-10cc-4b12-a6ab-1e917e232645" />
+
+  Dark Mode :
+  <img width="1913" height="865" alt="Screenshot 2026-01-20 111814" src="https://github.com/user-attachments/assets/4d749cf0-2fc1-43f9-8d24-6371c6d4c957" />
+
+  Favourites :
+  <img width="1902" height="870" alt="image" src="https://github.com/user-attachments/assets/0953cdbc-e887-444b-82e7-5dd9c534e9ce" />
+
+  Trends:
+  <img width="1902" height="862" alt="Screenshot 2026-01-20 111854" src="https://github.com/user-attachments/assets/057084fc-15a7-45bd-8212-93ad99982398" />
 
 # License
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
