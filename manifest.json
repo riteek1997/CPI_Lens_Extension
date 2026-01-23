@@ -1,0 +1,65 @@
+{
+  "manifest_version": 3,
+  "name": "CPI Lens: SAP Integration Suite Inspector",
+  "short_name": "CPI Lens",
+  "author": "Riteek Khaul",
+  "description": "Smart Observability and analytics for SAP CPI iFlows",
+  "version": "1.0.0",
+
+  "permissions": [
+    "tabs",
+    "scripting",
+    "storage"
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+
+  "host_permissions": [
+    "https://*.hana.ondemand.com/*",
+    "https://*.platform.sapcloud.cn/*",
+    "*://*/odata/*",
+    "*://*/workspaces.svc/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "icons": {
+    "128": "assets/logo.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.hana.ondemand.com/itspaces/*",
+        "https://*.platform.sapcloud.cn/itspaces/*",
+        "https://*.hana.ondemand.com/shell/*",
+        "https://*.platform.sapcloud.cn/shell/*",
+        "https://*.hana.ondemand.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["overlay.css"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "action": {
+    "default_title": "CPI Lens",
+    "default_icon": {
+      "128": "assets/logo.png"
+    }
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": [
+        "https://*.hana.ondemand.com/*",
+        "https://*.platform.sapcloud.cn/*"
+      ]
+    }
+  ]
+}
