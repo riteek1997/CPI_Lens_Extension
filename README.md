@@ -11,19 +11,12 @@ Working with SAP CPI often involves repetitive navigation, limited runtime insig
 CPI Lens is designed with privacy and security as first-class principles.
  
  - CPI Lens does not collect, store, or transmit any user credentials.
-
  - All data processing happens locally within the browser.
-
  - No SAP CPI data is sent to external servers or third-party services.
-
  - The extension does not track user activity and does not use analytics, telemetry, or advertising scripts.
-
  - CPI Lens does not modify, persist, or write back any data to SAP systems.
-
  - No personal data is collected, shared, or sold.
-
 - No cookies or persistent identifiers are used outside of optional local browser storage for user preferences.
-
 CPI Lens operates strictly as a read-only enhancement layer to improve visibility and usability within the SAP CPI user interface.
 
 ## 🚀 Why CPI Lens?
