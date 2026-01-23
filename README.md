@@ -62,6 +62,19 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 - Payload converters
 - XSD generator
 - No need to leave the CPI UI
+  
+#Installation 
+
+### Option 1: Install directly from the Microsoft Store (Recommended)
+   Store Link: will be updated soon ( Updates will be installed automatically )
+
+### Option 2:
+   Clone / Download this repository.
+   Open Chrome / Microsoft Edge and navigate to: edge://extensions/  or chrome://extensions/
+   Enable Developer mode.
+   Click Load unpacked.
+   Select the root folder of the cloned/downloaded repository
+CPI Lens is now installed and ready to use.
 
 # License
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
