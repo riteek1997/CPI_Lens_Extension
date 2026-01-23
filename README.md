@@ -68,7 +68,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 ### Option 1: Install directly from the Microsoft Store (Recommended)
    Store Link: will be updated soon ( Updates will be installed automatically )
 
-### Option 2:
+### Option 2: Developer Mode
    - Clone or download this repository.
    - Open Google Chrome or Microsoft Edge.
    - Navigate to:
@@ -103,6 +103,11 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
   Trends:
   
   <img width="1902" height="862" alt="Screenshot 2026-01-20 111854" src="https://github.com/user-attachments/assets/057084fc-15a7-45bd-8212-93ad99982398" />
+
+  Tools:
+
+  <img width="1912" height="872" alt="image" src="https://github.com/user-attachments/assets/f495c70e-8e8d-4f91-86a4-e6383486b588" />
+
 
 # License
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
