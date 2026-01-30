@@ -109,6 +109,26 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
   <img width="1912" height="872" alt="image" src="https://github.com/user-attachments/assets/f495c70e-8e8d-4f91-86a4-e6383486b588" />
 
 
+# Changelog
+### v1.0.0 – First Public Release
+
+🧭 Quick tenant identification with clear visual indicators
+
+📊 Message processing analytics (Success, Failed, Processing, Escalated)
+
+📈 Message volume trends for fast runtime insights
+
+⭐ Favorite iFlows for quick access
+
+👻 Ghosted artifacts detection
+
+💤 Idle iflows detection
+
+⏱️ Cert/keys expiry tracking
+
+🛠️ Built-in utilities (formatters, converters, schema tools)
+
+
 # License
 This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
