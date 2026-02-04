@@ -45,6 +45,9 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 - Bookmark important iFlows
 - One-click access to business-critical integrations
 
+### 👻Ghosted Artifacts
+- Identify iFlows that exist only in runtime but have no corresponding design-time artifact available for updates.
+
 ### 💤 Idle iFlows
 - Detect unused or inactive integrations
 - Improve tenant cleanliness and governance
