@@ -37,6 +37,7 @@ const MESSAGE_HANDLERS = {
 
   FETCH_LAST_PROCESSED_MESSAGE: msg =>
     executeInCpiTab(msg.tenantUrl, injectedFetch, [msg.url], msg.sendResponse),
+
 };
 
 

@@ -8,8 +8,8 @@
   const logoImg = document.createElement("img");
   logoImg.src = chrome.runtime.getURL("assets/logo.png");
   logoImg.alt = "CPI Lens";
-  logoImg.style.width = "45px";
-  logoImg.style.height = "45px";
+  logoImg.style.width = "35px";
+  logoImg.style.height = "35px";
   logoImg.style.borderRadius = "50%";
   logoImg.style.objectFit = "cover";
   fab.appendChild(logoImg);
@@ -18,8 +18,8 @@
     position: "fixed",
     bottom: "24px",
     right: "24px",
-    width: "50px",
-    height: "50px",
+    width: "40px",
+    height: "40px",
     borderRadius: "50%",
     background: "#284478",
     color: "#fff",
@@ -148,6 +148,274 @@
   observer.observe(document.body, { childList: true, subtree: true });
 })();
 
+(function injectExcelExportButton() {
+
+  function injectIFlowListbtn(){
+
+  const ACTIONS_ID = "__xmlview1--idObjectPageHeaderTitle-actions";
+
+  const actionsContainer = document.getElementById(ACTIONS_ID);
+  if (!actionsContainer) return;
+
+  // Avoid duplicates
+  if (actionsContainer.querySelector("#cpiLens_IflowListExport")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "cpiLens_IflowListExport";
+  btn.className =
+    "sapMBtn sapMBtnBase sapMBtnTransparent sapUxAPObjectPageHeaderActionButton";
+  btn.title = "Export iFlows to Excel";
+  btn.setAttribute("aria-label", "Export artifacts to Excel");
+
+  btn.innerHTML = `
+    <span class="sapMBtnInner">
+      <span class="sapMBtnIcon sapUiIcon sapUiIconMirrorInRTL" style="display: flex; align-items: center;">
+        <img src="${chrome.runtime.getURL('assets/xls.png')}" alt="Export to Excel" style="width:20px; height:20px; display:block;" />
+      </span>
+    </span>
+  `;
+
+  btn.onclick = () => {
+
+    const container = document.getElementById("__container1--Grid-wrapperfor-__text28");
+    const packageId = container?.querySelector("span.sapMText")?.innerText?.trim();
+
+    function downloadIFlowList(IFlowList){
+    // Prepare the data rows
+    const headers = ["Id", "Type", "Name", "Version", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy"];
+   
+    function formatSapDate(sapDate) {
+      if (!sapDate) return "";
+      // Try ISO first
+      if (!/^\/Date\(/.test(sapDate)) {
+        let parsed = new Date(sapDate);
+        if (!isNaN(parsed)) return (
+          parsed.getFullYear() + "-" +
+          String(parsed.getMonth() + 1).padStart(2, "0") + "-" +
+          String(parsed.getDate()).padStart(2, "0") + " " +
+          String(parsed.getHours()).padStart(2, "0") + ":" +
+          String(parsed.getMinutes()).padStart(2, "0") + ":" +
+          String(parsed.getSeconds()).padStart(2, "0")
+        );
+      }
+      const m = sapDate.match(/^\/Date\((\d+)\)\/$/);
+      if (m && m[1]) {
+        const date = new Date(Number(m[1]));
+        return (
+          date.getFullYear() + "-" +
+          String(date.getMonth() + 1).padStart(2, "0") + "-" +
+          String(date.getDate()).padStart(2, "0") + " " +
+          String(date.getHours()).padStart(2, "0") + ":" +
+          String(date.getMinutes()).padStart(2, "0") + ":" +
+          String(date.getSeconds()).padStart(2, "0")
+        );
+      }
+      return "";
+    }
+
+    const rows = [headers].concat(
+      (IFlowList || []).map(obj => [
+        obj.Name || "",
+        obj.Type || "",
+        obj.DisplayName || "",
+        obj.Version || "",
+        formatSapDate(obj.CreatedAt),
+        obj.CreatedBy || "",
+        formatSapDate(obj.ModifiedAt),
+        obj.ModifiedBy || "",
+      ])
+    );
+
+    // Convert to CSV
+    function toCsv(arr) {
+      return arr.map(row =>
+        row.map(item =>
+          ('"' + String(item).replace(/"/g, '""') + '"')
+        ).join(",")
+      ).join("\r\n");
+    }
+
+    const csvData = toCsv(rows);
+
+    // Trigger download
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${packageId}.xlsx.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    }
+
+    try {
+      const currentUrl = window.location.href;
+      const tenant = new URL(currentUrl);
+      const baseUrl = `${tenant.protocol}//${tenant.host}`;
+
+      const apiUrl = `${baseUrl}/odata/1.0/workspace.svc/ContentEntities.ContentPackages('${packageId}')/Artifacts?&$format=json&$select=Name,Type,DisplayName,Version,CreatedAt,CreatedBy,ModifiedAt,ModifiedBy`;
+      chrome.runtime.sendMessage(
+        {
+          type: "FETCH_DESIGNTIME_ARTIFACTS",
+          url: apiUrl,
+          tenantUrl: currentUrl
+        },
+        (response) => {
+
+          if (!response?.ok) {
+          alert("Please refresh your page and try again!");
+            return;
+          }
+          const IflowsList = response.data?.d?.results || [];
+          downloadIFlowList(IflowsList);
+        }
+      );
+    } catch (err) {
+      alert("Please refresh your page and try again!");
+    }
+
+  };
+
+  actionsContainer.appendChild(btn);
+  }
+
+  async function injectDeployedIFlowList() {
+      
+      const ACTIONS_ID = "PanelArtifactsTitle";
+    
+      const actionsContainer = document.getElementById(ACTIONS_ID);
+      if (!actionsContainer) return;
+    
+      // Avoid duplicates
+      if (actionsContainer.querySelector("#cpiLens_DeployedIflowListExport")) return;
+    
+      const btn = document.createElement("button");
+      btn.id = "cpiLens_DeployedIflowListExport";
+      btn.className =
+      "sapMBtn sapMBtnBase sapMBtnTransparent sapUxAPObjectPageHeaderActionButton";
+      btn.title = "Export iFlows to Excel";
+      btn.setAttribute("aria-label", "Export artifacts to Excel");
+      btn.innerHTML = `
+        <span class="sapMBtnInner">
+          <span class="sapMBtnIcon sapUiIcon sapUiIconMirrorInRTL" style="display: flex; align-items: center;">
+            <img src="${chrome.runtime.getURL('assets/xls.png')}" alt="Export to Excel" style="width:20px; height:20px; display:block;" />
+          </span>
+        </span>
+      `;
+    
+      btn.onclick = () => {
+    
+        function downloadIFlowList(IFlowList){
+        // Prepare the data rows
+        const headers = ["Id", "Version", "Name", "Type", "DeployedBy", "DeployedOn", "Status"];
+       
+        function formatSapDate(sapDate) {
+          if (!sapDate) return "";
+          // Try ISO first
+          if (!/^\/Date\(/.test(sapDate)) {
+            let parsed = new Date(sapDate);
+            if (!isNaN(parsed)) return (
+              parsed.getFullYear() + "-" +
+              String(parsed.getMonth() + 1).padStart(2, "0") + "-" +
+              String(parsed.getDate()).padStart(2, "0") + " " +
+              String(parsed.getHours()).padStart(2, "0") + ":" +
+              String(parsed.getMinutes()).padStart(2, "0") + ":" +
+              String(parsed.getSeconds()).padStart(2, "0")
+            );
+          }
+          const m = sapDate.match(/^\/Date\((\d+)\)\/$/);
+          if (m && m[1]) {
+            const date = new Date(Number(m[1]));
+            return (
+              date.getFullYear() + "-" +
+              String(date.getMonth() + 1).padStart(2, "0") + "-" +
+              String(date.getDate()).padStart(2, "0") + " " +
+              String(date.getHours()).padStart(2, "0") + ":" +
+              String(date.getMinutes()).padStart(2, "0") + ":" +
+              String(date.getSeconds()).padStart(2, "0")
+            );
+          }
+          return "";
+        }
+    
+        const rows = [headers].concat(
+          (IFlowList || []).map(obj => [
+            obj.Id || "",
+            obj.Version || "",
+            obj.Name || "",
+            obj.Type || "",
+            obj.DeployedBy || "",
+            formatSapDate(obj.DeployedOn),
+            obj.Status || "",
+          ])
+        );
+    
+        // Convert to CSV
+        function toCsv(arr) {
+          return arr.map(row =>
+            row.map(item =>
+              ('"' + String(item).replace(/"/g, '""') + '"')
+            ).join(",")
+          ).join("\r\n");
+        }
+    
+        const csvData = toCsv(rows);
+    
+        // Trigger download
+        const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `DeployedArtifacts_CloudIntegration.xlsx.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        }
+    
+        try {
+          const currentUrl = window.location.href;
+          const tenantUrl = new URL(currentUrl);
+          const baseUrl = `${tenantUrl.protocol}//${tenantUrl.host}`;
+    
+          const deployedApiUrl =
+            `${baseUrl}/api/v1/IntegrationRuntimeArtifacts`
+            + `?$select=Id,Version,Name,Type,DeployedBy,DeployedOn,Status`;
+    
+          chrome.runtime.sendMessage(
+            {
+              type: "FETCH_DEPLOYED_IFLOWS",
+              url: deployedApiUrl,
+              tenantUrl: currentUrl
+            },
+            async (response) => {
+              if (!response?.ok) {
+                alert("Please refresh your page and try again!");
+                return;
+              }
+    
+              const iFlowsList = response.data?.d?.results || [];
+              downloadIFlowList(iFlowsList);
+            }
+          );
+        } catch (err) {
+          console.log(err.message)
+          alert("Please refresh your page and try again!");
+        }
+    
+      };
+    
+      actionsContainer.appendChild(btn);
+  }
+
+  const observer = new MutationObserver(() => {
+    injectIFlowListbtn();
+    injectDeployedIFlowList();
+   });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+})();
 
 function openCpiLensOverlay() {
   if (document.getElementById("cpi-lens-overlay")) return;
@@ -166,14 +434,13 @@ function openCpiLensOverlay() {
           <div class="title">CPI Lens</div>
 
           <div class="header-center" id="tenantInfo">
-            <span class="info-item">Tenant: <b id="tenantName">-</b></span>
-            <span class="divider">|</span>
-            <span class="info-item">Region: <b id="regionName">-</b></span>
-            <span class="divider">|</span>
-            <span class="info-item">User: <b id="userName">-</b></span>
+           <span class="info-item"> Tenant: <b id="tenantName">-</b> <span id="envBadge" class="env-badge env-unknown">UNKNOWN</span> </span>
+           <span class="divider">|</span>
+           <span class="info-item">Region: <b id="regionName">-</b></span>
+           <span class="divider">|</span>
+           <span class="info-item">User: <b id="userName">-</b></span>
           </div>
-
-            <div class="header-actions">
+          <div class="header-actions">
             <label class="theme-switch">
               <input type="checkbox" id="cpi-theme-toggle">
               <span class="slider"></span>
@@ -189,7 +456,7 @@ function openCpiLensOverlay() {
           <nav class="cpi-lens-sidebar">
             <button data-tab="activities" class="active">📊 Activities</button>
             <button data-tab="trends" >📈 Trends</button>
-            <button data-tab="favourites">⭐ Favourites</button>
+            <button data-tab="favourites">⭐ Favorites</button>
             <button data-tab="failures">❌  Failures</button>
              <button data-tab="ghosted">👻 Ghosted Artifacts</button>
             <button data-tab="expiry">⏳ Expiry Tracker</button>
@@ -514,9 +781,8 @@ function openCpiLensOverlay() {
     <h2>ℹ️ Version Information</h2>
     <div class="info-grid">
       <div><b>Version</b></div><div>1.0.0</div>
-      <div><b>Source:</b></div><div> <a href="https://github.com/riteek1997/CPI_Lens_Extension" target="_blank" rel="noopener" style="color:#37557a;">GitHub Repository</a></div>
-      <div><b>Developed By:</b></div> <div> <a href="https://www.linkedin.com/in/riteek-khaul" target="_blank" rel="noopener"  style="color:#37557a;">Riteek Khaul</a></div>
-      <div><b>License:</b></div><div> MIT</div>
+      <div><b>Developed by</b></div> <div> <a href="https://www.linkedin.com/in/riteek-khaul" target="_blank" rel="noopener"  style="color:#37557a;">Riteek Khaul</a></div>
+      <div><b>License</b></div><div>GPL-3.0</div>
       </div>
       </div>
       <div class="about-footer">
@@ -528,7 +794,7 @@ function openCpiLensOverlay() {
   
         <!-- FOOTER -->
         <footer class="cpi-lens-footer">
-          CPI Lens Extension • SAP Integration Suite • v1.0
+         © 2026 CPI Lens by Riteek Khaul. All rights reserved.  • v1.1.0
         </footer>
   
     </div>
@@ -544,7 +810,7 @@ function openCpiLensOverlay() {
   const toggle = overlay.querySelector("#cpi-theme-toggle");
 
   // 1️⃣ Detect system theme
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const prefersDark = window.matchMedia("(prefers-color-scheme: light)").matches;
 
   // 2️⃣ Load saved theme OR system theme
   const savedTheme =
@@ -631,7 +897,7 @@ function openCpiLensOverlay() {
   
       <div id="activitiesLoader" class="cpi-loader-container">
         <div class="cpi-loader"></div>
-        <div style="margin-top:10px;">Loading activities...</div>
+        <div style="margin-top:10px;">Hang tight! Loading Activities... 🔄</div>
       </div>
   
       <div id="activitiesError"
@@ -796,6 +1062,65 @@ function openCpiLensOverlay() {
 
     document.getElementById("tenantName").innerText = tenant;
     document.getElementById("regionName").innerText = region;
+
+    updateEnvironmentBadge(tenant);
+
+    function updateEnvironmentBadge(tenantName) {
+      const env = detectEnvironment(tenantName);
+      const badge = document.getElementById("envBadge");
+    
+      badge.textContent = env;
+    
+      badge.className = "env-badge"; // reset
+      badge.classList.add(`env-${env.toLowerCase()}`);
+    }
+
+    function detectEnvironment(tenantIdentifier = "") {
+      const value = tenantIdentifier.toLowerCase();
+    
+      if (
+        value.includes("dev") ||
+        value.includes("development") ||
+        value.includes("sandbox")
+      ) {
+        return "DEV";
+      }
+
+      if (
+        value.includes("non-prd") ||
+        value.includes("non-prod")
+      ) {
+        return "Non-PROD";
+      }
+    
+      if (
+        value.includes("qa") ||
+        value.includes("qas") ||
+        value.includes("test") ||
+        value.includes("tst") ||
+        value.includes("uat")
+      ) {
+        return "QA";
+      }
+    
+      if (
+        value.includes("prod") ||
+        value.includes("prd") ||
+        value.includes("production") ||
+        value.includes("live")
+      ) {
+        return "PROD";
+      }
+
+      if (
+        value.includes("trial")
+      ) {
+        return "TRIAL";
+      }
+    
+      return "UNKNOWN";
+    }    
+
   }
 
   function extractUserName() {
@@ -816,14 +1141,14 @@ function openCpiLensOverlay() {
         },
         (response) => {
           if (!response?.ok) {
-            contents.log("Errro fetching User!")
+            contents.log("Errro fetching User, Please refresh your page and try again!")
             return;
           }
           document.getElementById("userName").innerText = response.data[0].Name;
         }
       );
     } catch (err) {
-      contents.log("Errro fetching User!")
+      contents.log("Errro fetching User, Please refresh your page and try again!")
     }
   }
 
@@ -865,7 +1190,7 @@ function openCpiLensOverlay() {
         (response) => {
           if (!response?.ok) {
             failuresContent.innerHTML =
-              `<div style="padding:20px;color:#d32f2f;">Error fetching failed messages</div>`;
+              `<div style="padding:20px;color:#d32f2f;">Error fetching failed messages, Please refresh your page and try again!</div>`;
             return;
           }
 
@@ -875,8 +1200,9 @@ function openCpiLensOverlay() {
         }
       );
     } catch (err) {
+      console.log(err.message);
       failuresContent.innerHTML =
-        `<div style="padding:20px;color:#d32f2f;">${err.message}</div>`;
+        `<div style="padding:20px;color:#d32f2f;">Please refresh your page and try again!</div>`;
     }
   }
 
@@ -1039,7 +1365,7 @@ function openCpiLensOverlay() {
         },
         async (response) => {
           if (!response?.ok) {
-            idleContent.innerHTML = `<div>Error fetching deployed iFlows</div>`;
+            idleContent.innerHTML = `<div>Please refresh your page and try again!</div>`;
             return;
           }
 
@@ -1079,12 +1405,17 @@ function openCpiLensOverlay() {
         }
       );
     } catch (err) {
-      idleContent.innerHTML = `<div>Error: ${err.message}</div>`;
+      console.log(err.message)
+      idleContent.innerHTML = `<div>Please refresh your page and try again!</div>`;
     }
   }
   function displayIdleIFlows(data) {
 
-    console.log(data)
+    // Create counters for each iFlow status
+    let activeCount = 0;
+    let atRiskCount = 0;
+    let idleCount = 0;
+
     if (!idleContent) return;
     // Transform the data into an array, making sure to handle the OData response format or a possible array directly
     let iFlows = [];
@@ -1136,13 +1467,12 @@ function openCpiLensOverlay() {
     // Helper: status rendering
     function getStatusCell(idleDays) {
 
-      console.log(idleDays)
       if (typeof idleDays !== "number" || isNaN(idleDays)) {
         return `<span style="color:#757575;">-</span>`;
       }
       if (idleDays <= 31) {
         return `<span title="Active" style="font-weight:bold;color:#29b364;">🟢 Active</span>`;
-      } else if (idleDays <= 60) {
+      } else if (idleDays <= 90) {
         return `<span title="At Risk" style="font-weight:bold;color:#e1b62a;">🟡 At Risk</span>`;
       } else {
         return `<span title="Idle" style="font-weight:bold;color:#d32f2f;">🔴 Idle</span>`;
@@ -1152,8 +1482,11 @@ function openCpiLensOverlay() {
     // Discard flows for which idle days are <= 31
     iFlows = iFlows.filter(flow => {
       const idleDays = calcIdleDays(flow.__lastMsgDate);
-      console.log("idleday:", idleDays)
-      console.log("idledayas:", idleDays)
+      if (idleDays <= 31) activeCount++;
+      else if (idleDays <= 90) atRiskCount++;
+      else if (idleDays > 90) {
+        idleCount++;
+      }
       // Exclude (discard) flows where idle days are 31 or less
       if (idleDays === "-" || typeof idleDays !== "number" || isNaN(idleDays)) return false;
       return idleDays > 31;
@@ -1188,7 +1521,12 @@ function openCpiLensOverlay() {
 
     idleContent.innerHTML = `
     <div style="padding:16px;">
-      <h3 id="idle-iflows-title">Idle IFlows</h3>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h3 id="idle-iflows-title" style="margin-bottom: 0;">Idle IFlows</h3>
+        <span style="display: flex; align-items: center; margin-left: 12px; cursor:pointer;" title="Export to Excel" id="exportIdleIflowsToExcel">
+          <img src="${chrome.runtime.getURL('assets/xls.png')}" alt="Export to Excel" style="width:20px; height:20px; display:block;" />
+        </span>
+      </div>
       <div style="overflow-x:auto;">
         <table id="idle-iflows-table">
           <thead>
@@ -1207,12 +1545,50 @@ function openCpiLensOverlay() {
         </table>
       </div>
       <div style="margin-top:6px;margin-left:2px;font-size:0.93em;color:#999;">
-        <span title="Active" style="margin-right:16px;vertical-align:middle;"><span style="font-weight:bold;color:#3bc14a;">🟢 Active</span>: (&lt; 32 days)</span>
-        <span title="At Risk" style="margin-right:16px;vertical-align:middle;"><span style="font-weight:bold;color:#e1b62a;">🟡 At Risk</span>: ( 32 - 90 days )</span>
-        <span title="Idle" style="vertical-align:middle;"><span style="font-weight:bold;color:#d32f2f;">🔴 Idle</span> &gt; 90 days</span>
+        <span title="Active" style="margin-right:16px;vertical-align:middle;"><span style="font-weight:bold;color:#3bc14a;">🟢 Active</span>: <span style="font-weight:bold;">${activeCount}</span> (&lt; 32 days)</span>
+        <span title="At Risk" style="margin-right:16px;vertical-align:middle;"><span style="font-weight:bold;color:#e1b62a;">🟡 At Risk</span>: <span style="font-weight:bold;">${atRiskCount}</span> ( 32 - 90 days )</span>
+        <span title="Idle" style="vertical-align:middle;"><span style="font-weight:bold;color:#d32f2f;">🔴 Idle</span>: <span style="font-weight:bold;">${idleCount}</span> ( &gt; 90 days)</span>
       </div>
       </div>
     `;
+
+    // Bind the export button click event
+    const exportBtn = document.getElementById("exportIdleIflowsToExcel");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", exportIdleIflowsToExcel);
+    }
+
+    function exportIdleIflowsToExcel() {
+
+      function getSeverityStatus(idleDays) {
+
+        if (typeof idleDays !== "number" || isNaN(idleDays)) {
+            return `-`;
+          }
+        if (idleDays <= 31) {
+          return `Active`;
+        } else if (idleDays <= 60) {
+          return `At Risk`;
+        } else {
+          return `Idle`;
+        }
+      }
+      const headers = "Name,Version,DeployedOn,LastMessageOn,IdleDays,Severity";
+      const csvRows = iFlows.map(flow => {
+        return [flow.Name, flow.Version, formatDate(flow.DeployedOn), formatDate(flow.__lastMsgDate), calcIdleDays(flow.__lastMsgDate), getSeverityStatus(calcIdleDays(flow.__lastMsgDate))].join(",");
+      });
+      const csv = [headers, ...csvRows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `IdleIFlows_CloudIntegration.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
   }
 
   // expiry tracker
@@ -1244,7 +1620,7 @@ function openCpiLensOverlay() {
           if (!response?.ok) {
             expiryContent.innerHTML = `
               <div style="padding:24px;color:#d32f2f;">
-                ${response?.error || "Could not fetch expiry tracker"}
+               Please refresh your page and try again!
               </div>`;
             return;
           }
@@ -1253,8 +1629,9 @@ function openCpiLensOverlay() {
         }
       );
     } catch (err) {
+      console.log(err.message)
       expiryContent.innerHTML = `
-        <div style="padding:24px;color:#d32f2f;">${err.message}</div>`;
+        <div style="padding:24px;color:#d32f2f;">Please refresh your page and try again!</div>`;
     }
   }
   function displayExpiryTracker(data) {
@@ -1382,7 +1759,7 @@ function openCpiLensOverlay() {
           loader.style.display = "none";
 
           if (!response?.ok) {
-            errorEl.textContent = response?.error || "Unable to fetch analytics.";
+            errorEl.textContent ="Please refresh your page and try again!";
             errorEl.style.display = "block";
             return;
           }
@@ -1394,7 +1771,7 @@ function openCpiLensOverlay() {
       );
     } catch (err) {
       loader.style.display = "none";
-      errorEl.textContent = err.message;
+      errorEl.textContent = "Please refresh your page and try again!";
       errorEl.style.display = "block";
     } finally {
       if (refreshBtn) {
@@ -1794,7 +2171,7 @@ function openCpiLensOverlay() {
         (response) => {
           if (!response?.ok) {
             trendsContent.innerHTML =
-              `<div style="padding:20px;color:#d32f2f">Error loading trends</div>`;
+              `<div style="padding:20px;color:#d32f2f">Please refresh your page and try again!</div>`;
             return;
           }
 
@@ -1803,7 +2180,7 @@ function openCpiLensOverlay() {
       );
     } catch (e) {
       trendsContent.innerHTML =
-        `<div style="padding:20px;color:#d32f2f">${e.message}</div>`;
+        `<div style="padding:20px;color:#d32f2f">Please refresh your page and try again!</div>`;
     }
   }
 
@@ -2519,16 +2896,64 @@ function openCpiLensOverlay() {
 
   function renderGhostedUI(ghosts = []) {
 
+
+    function exportGhostedArtifactsToExcel() {
+
+      function formatCpiDate(isoDate) {
+        if (!isoDate) return "-";
+
+        const date = new Date(isoDate);
+
+        return date.toLocaleString("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).replace(",", "");
+      }
+     
+      const headers = "Name,DeployedOn,DeployedBy,Version";
+      const csvRows = ghosts.map(ghost =>
+        [
+          `"${ghost.name ?? ''}"`,
+          `"${formatCpiDate(ghost.deployedOn) ?? ''}"`,
+          `"${ghost.deployedBy ?? ''}"`,
+          `"${ghost.version ?? ''}"`
+        ].join(",")
+      );
+      const csv = [headers, ...csvRows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `GhostedArtifacts_CloudIntegration.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url); 
+    }
+
     ghostedContent.innerHTML = `<div class="ghosted-tab">
 
-  <div class="ghost-summary">
-    <span id="ghostCount">0</span> Ghosted (Runtime Only) Artifacts Found  
-  </div>
-
-  <div id="ghostList" class="ghost-list"></div>
-
-</div>
+    <div class="ghost-summary">
+     <span id="ghostCount">0</span> Ghosted (Runtime Only) Artifacts Found  
+      <span style="display: flex; align-items: right; cursor:pointer;" title="Export to Excel" id="exportGhostedArtifactsToExcel">
+        <img src="${chrome.runtime.getURL('assets/xls.png')}" alt="Export to Excel" style="width:20px; height:20px; display:block;" />
+      </span>
+     </span>
+    </div>
+    <div id="ghostList" class="ghost-list"></div>
+    </div>
 `
+
+    // Bind the export button click event
+    const exportBtn = document.getElementById("exportGhostedArtifactsToExcel");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", exportGhostedArtifactsToExcel);
+    }
 
     const list = document.getElementById("ghostList");
     const count = document.getElementById("ghostCount");
@@ -2762,7 +3187,7 @@ function openCpiLensOverlay() {
         },
         async (response) => {
           if (!response?.ok) {
-            duplicatesContent.innerHTML = `<div>Error fetching deployed iFlows</div>`;
+            duplicatesContent.innerHTML = `<div>Please refresh your page and try again!</div>`;
             return;
           }
 
@@ -2773,7 +3198,7 @@ function openCpiLensOverlay() {
         }
       );
     } catch (err) {
-      duplicatesContent.innerHTML = `<div>Error: ${err.message}</div>`;
+      duplicatesContent.innerHTML = `<div>Please refresh your page and try again!</div>`;
     }
 
   }
@@ -2787,7 +3212,7 @@ function openCpiLensOverlay() {
     <div class="fav-container">
 
   <div class="fav-header">
-    ⭐ Favourite iFlows
+    ⭐ Favorite iFlows
     <span class="fav-subtitle">"Quick access to frequently used iFlows"</span>
      <input
       type="text"
@@ -2805,7 +3230,7 @@ function openCpiLensOverlay() {
     const STORAGE_KEY = "__CPI_LENS_FAVOURITES__::";
 
     const key = `${STORAGE_KEY}${tenant}`;
-    console.log(key);
+
     renderFavourites(key);
 
     document.getElementById("favSearch").addEventListener("input", e => {
@@ -2891,6 +3316,7 @@ function openCpiLensOverlay() {
       <button class="tool-btn" data-tool="xmltojson">XML → JSON</button>
       <button class="tool-btn" data-tool="jsontoxml">JSON → XML</button>
       <button class="tool-btn" data-tool="xsd">XSD Generator</button>
+      <button class="tool-btn" data-tool="xpath">X-Path</button>
     </div>
   
     <div class="tools-workspace" id="toolsWorkspace"></div>
@@ -2935,6 +3361,10 @@ function openCpiLensOverlay() {
 
           case "xsd":
             renderXsdGenerator?.();
+            break;
+
+          case "xpath":
+            renderXpathTester?.();
             break;
 
           default:
@@ -3155,6 +3585,43 @@ function openCpiLensOverlay() {
     return formatted.trim();
   }
 
+   // Show Toast when content is copied to clipboard
+   function showToast(message) {
+    // Remove existing toast if any
+    const existing = document.getElementById("cpi-lens-toast");
+    if (existing) existing.remove();
+
+    const toast = document.createElement("div");
+    toast.id = "cpi-lens-toast";
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "40px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#333c";
+    toast.style.color = "white";
+    toast.style.padding = "10px 24px";
+    toast.style.borderRadius = "22px";
+    toast.style.fontSize = "1rem";
+    toast.style.zIndex = "9999";
+    toast.style.boxShadow = "0 2px 12px #0003";
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s";
+    toast.style.zIndex = "2147483647"; // Ensure toast is always on top
+
+    document.body.appendChild(toast);
+    // Trigger animate in
+    setTimeout(() => {
+      toast.style.opacity = "1";
+    }, 50);
+
+    // Remove after some time
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 600);
+    }, 1600);
+  }
+
   function renderJsonFormatter() {
     const toolsWorkspace = document.getElementById("toolsWorkspace");
 
@@ -3218,6 +3685,7 @@ function openCpiLensOverlay() {
     document.getElementById("jsonfmt-copy").onclick = () => {
       if (!output.textContent) return;
       navigator.clipboard.writeText(output.textContent);
+      showToast("Copied to clipboard! 📋");
     };
 
     /* 🔹 Syntax highlighting */
@@ -3343,6 +3811,7 @@ function openCpiLensOverlay() {
     document.getElementById("xmlfmt-copy").onclick = () => {
       if (!output.textContent) return;
       navigator.clipboard.writeText(output.textContent);
+      showToast("Copied to clipboard! 📋");
     };
   }
 
@@ -3458,6 +3927,7 @@ function openCpiLensOverlay() {
     document.getElementById("jsonxml-copy").onclick = () => {
       if (!output.textContent) return;
       navigator.clipboard.writeText(output.textContent);
+      showToast("Copied to clipboard! 📋");
     };
   }
 
@@ -3583,6 +4053,7 @@ function openCpiLensOverlay() {
     document.getElementById("xmljson-copy").onclick = () => {
       if (!output.textContent) return;
       navigator.clipboard.writeText(output.textContent);
+      showToast("Copied to clipboard! 📋");
     };
   }
 
@@ -3724,6 +4195,150 @@ function openCpiLensOverlay() {
     document.getElementById("xsdgen-copy").onclick = () => {
       if (!output.textContent) return;
       navigator.clipboard.writeText(output.textContent);
+      showToast("Copied to clipboard! 📋");
+    };
+  }
+
+  function renderXpathTester() {
+    const toolsWorkspace = document.getElementById("toolsWorkspace");
+
+    toolsWorkspace.innerHTML = `
+        <div class="xpath-container">
+          <div class="xpath-header">
+            <h3>X-Path Tester</h3>
+            <div class="xpath-actions">
+              <button class="xpath-btn primary" id="xpath-test">Test</button>
+              <button class="xpath-btn" id="xpath-clear">Clear</button>
+              <button class="xpath-btn" id="xpath-copy">Copy</button>
+            </div>
+          </div>
+          <div class="xpath-panels">
+            <textarea
+              id="xpath-xml-input"
+              class="xpath-textarea"
+              placeholder="Paste XML here..."
+            ></textarea>
+            <input
+              id="xpath-expression-input"
+              class="xpath-input"
+              type="text"
+              placeholder="Enter XPath here e.g. //foo/bar"
+              style="margin:8px 0 0 0;width:100%;font-size:1em;padding:5px;"
+            />
+            <pre
+              id="xpath-output"
+              class="xpath-output"
+            ></pre>
+          </div>
+        </div>
+      `;
+
+    const xmlInput = document.getElementById("xpath-xml-input");
+    const xpathInput = document.getElementById("xpath-expression-input");
+    const output = document.getElementById("xpath-output");
+    const testBtn = document.getElementById("xpath-test");
+    const clearBtn = document.getElementById("xpath-clear");
+    const copyBtn = document.getElementById("xpath-copy");
+
+    // ---------- CORE LOGIC ----------
+    function testXpath(xmlStr, xpathExpr) {
+      // Parse XML
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlStr, "application/xml");
+      if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+        throw new Error("Invalid XML provided.");
+      }
+
+      // Evaluate XPath
+      let resultStr = "";
+      try {
+        // Always use UNORDERED_NODE_ITERATOR_TYPE to get explicit node set rather than relying on implicit conversion
+        const nodesSnapshot = xmlDoc.evaluate(xpathExpr, xmlDoc, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+
+        let node = nodesSnapshot.iterateNext();
+        if (!node) {
+          resultStr = "(No results)";
+        } else {
+          // If there are multiple nodes, pick the FIRST occurring one that is not blank when trimmed.
+          let pickedValue = "";
+          while (node) {
+            let value = "";
+            if (node.nodeType === Node.ATTRIBUTE_NODE) {
+              value = node.nodeValue || "";
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+              value = (node.textContent ?? "").trim();
+            } else if (node.nodeType === Node.TEXT_NODE) {
+              value = (node.nodeValue ?? "").trim();
+            } else {
+              value = (node.textContent ?? "").trim();
+            }
+            if (value.length > 0) {
+              pickedValue = value;
+              break;
+            }
+            node = nodesSnapshot.iterateNext();
+          }
+          // If no non-empty value found, fall back to first node's raw value (could be blank)
+          if (!pickedValue) {
+            // If no non-empty, rewind and use first node's raw textContent or value
+            node = nodesSnapshot.iterateNext();
+            if (node) {
+              if (node.nodeType === Node.ATTRIBUTE_NODE) {
+                pickedValue = node.nodeValue || "";
+              } else if (node.nodeType === Node.ELEMENT_NODE) {
+                pickedValue = (node.textContent ?? "");
+              } else if (node.nodeType === Node.TEXT_NODE) {
+                pickedValue = (node.nodeValue ?? "");
+              } else {
+                pickedValue = (node.textContent ?? "");
+              }
+            }
+          }
+          resultStr = pickedValue !== undefined ? pickedValue : "(No results)";
+        }
+      } catch (err) {
+        throw new Error("Invalid XPath: " + err.message);
+      }
+
+      return resultStr;
+    }
+
+    // ---------- EVENTS ----------
+    testBtn.onclick = () => {
+      output.classList.remove("error");
+      output.textContent = "";
+      const xml = xmlInput.value.trim();
+      const xpath = xpathInput.value.trim();
+      if (!xml) {
+        output.textContent = "⚠ Please provide XML input";
+        output.classList.add("error");
+        return;
+      }
+      if (!xpath) {
+        output.textContent = "⚠ Please enter an XPath expression";
+        output.classList.add("error");
+        return;
+      }
+      try {
+        const value = testXpath(xml, xpath);
+        output.textContent = value || "(No results)";
+      } catch (err) {
+        output.textContent = "❌ " + err.message;
+        output.classList.add("error");
+      }
+    };
+
+    clearBtn.onclick = () => {
+      xmlInput.value = "";
+      xpathInput.value = "";
+      output.textContent = "";
+      output.classList.remove("error");
+    };
+
+    copyBtn.onclick = () => {
+      if (!xpathInput.value.trim()) return;
+      navigator.clipboard.writeText(xpathInput.value.trim());
+      showToast("XPath copied to clipboard! 📋");
     };
   }
 

@@ -4,7 +4,7 @@
   "short_name": "CPI Lens",
   "author": "Riteek Khaul",
   "description": "Smart Observability and analytics for SAP CPI iFlows",
-  "version": "1.0.0",
+  "version": "1.0.1",
 
   "permissions": [
     "tabs",
