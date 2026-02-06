@@ -150,136 +150,6 @@
 
 (function injectExcelExportButton() {
 
-  function injectIFlowListbtn(){
-
-  const ACTIONS_ID = "__xmlview1--idObjectPageHeaderTitle-actions";
-
-  const actionsContainer = document.getElementById(ACTIONS_ID);
-  if (!actionsContainer) return;
-
-  // Avoid duplicates
-  if (actionsContainer.querySelector("#cpiLens_IflowListExport")) return;
-
-  const btn = document.createElement("button");
-  btn.id = "cpiLens_IflowListExport";
-  btn.className =
-    "sapMBtn sapMBtnBase sapMBtnTransparent sapUxAPObjectPageHeaderActionButton";
-  btn.title = "Export iFlows to Excel";
-  btn.setAttribute("aria-label", "Export artifacts to Excel");
-
-  btn.innerHTML = `
-    <span class="sapMBtnInner">
-      <span class="sapMBtnIcon sapUiIcon sapUiIconMirrorInRTL" style="display: flex; align-items: center;">
-        <img src="${chrome.runtime.getURL('assets/xls.png')}" alt="Export to Excel" style="width:20px; height:20px; display:block;" />
-      </span>
-    </span>
-  `;
-
-  btn.onclick = () => {
-
-    const container = document.getElementById("__container1--Grid-wrapperfor-__text28");
-    const packageId = container?.querySelector("span.sapMText")?.innerText?.trim();
-
-    function downloadIFlowList(IFlowList){
-    // Prepare the data rows
-    const headers = ["Id", "Type", "Name", "Version", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy"];
-   
-    function formatSapDate(sapDate) {
-      if (!sapDate) return "";
-      // Try ISO first
-      if (!/^\/Date\(/.test(sapDate)) {
-        let parsed = new Date(sapDate);
-        if (!isNaN(parsed)) return (
-          parsed.getFullYear() + "-" +
-          String(parsed.getMonth() + 1).padStart(2, "0") + "-" +
-          String(parsed.getDate()).padStart(2, "0") + " " +
-          String(parsed.getHours()).padStart(2, "0") + ":" +
-          String(parsed.getMinutes()).padStart(2, "0") + ":" +
-          String(parsed.getSeconds()).padStart(2, "0")
-        );
-      }
-      const m = sapDate.match(/^\/Date\((\d+)\)\/$/);
-      if (m && m[1]) {
-        const date = new Date(Number(m[1]));
-        return (
-          date.getFullYear() + "-" +
-          String(date.getMonth() + 1).padStart(2, "0") + "-" +
-          String(date.getDate()).padStart(2, "0") + " " +
-          String(date.getHours()).padStart(2, "0") + ":" +
-          String(date.getMinutes()).padStart(2, "0") + ":" +
-          String(date.getSeconds()).padStart(2, "0")
-        );
-      }
-      return "";
-    }
-
-    const rows = [headers].concat(
-      (IFlowList || []).map(obj => [
-        obj.Name || "",
-        obj.Type || "",
-        obj.DisplayName || "",
-        obj.Version || "",
-        formatSapDate(obj.CreatedAt),
-        obj.CreatedBy || "",
-        formatSapDate(obj.ModifiedAt),
-        obj.ModifiedBy || "",
-      ])
-    );
-
-    // Convert to CSV
-    function toCsv(arr) {
-      return arr.map(row =>
-        row.map(item =>
-          ('"' + String(item).replace(/"/g, '""') + '"')
-        ).join(",")
-      ).join("\r\n");
-    }
-
-    const csvData = toCsv(rows);
-
-    // Trigger download
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${packageId}.xlsx.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    }
-
-    try {
-      const currentUrl = window.location.href;
-      const tenant = new URL(currentUrl);
-      const baseUrl = `${tenant.protocol}//${tenant.host}`;
-
-      const apiUrl = `${baseUrl}/odata/1.0/workspace.svc/ContentEntities.ContentPackages('${packageId}')/Artifacts?&$format=json&$select=Name,Type,DisplayName,Version,CreatedAt,CreatedBy,ModifiedAt,ModifiedBy`;
-      chrome.runtime.sendMessage(
-        {
-          type: "FETCH_DESIGNTIME_ARTIFACTS",
-          url: apiUrl,
-          tenantUrl: currentUrl
-        },
-        (response) => {
-
-          if (!response?.ok) {
-          alert("Please refresh your page and try again!");
-            return;
-          }
-          const IflowsList = response.data?.d?.results || [];
-          downloadIFlowList(IflowsList);
-        }
-      );
-    } catch (err) {
-      alert("Please refresh your page and try again!");
-    }
-
-  };
-
-  actionsContainer.appendChild(btn);
-  }
-
   async function injectDeployedIFlowList() {
       
       const ACTIONS_ID = "PanelArtifactsTitle";
@@ -391,7 +261,7 @@
             },
             async (response) => {
               if (!response?.ok) {
-                alert("Please refresh your page and try again!");
+                showToast("Failed to fetch deployed iFlows. Please refresh your page and try again!");
                 return;
               }
     
@@ -401,7 +271,7 @@
           );
         } catch (err) {
           console.log(err.message)
-          alert("Please refresh your page and try again!");
+          showToast("Failed to fetch deployed iFlows. Please refresh your page and try again!");
         }
     
       };
@@ -410,7 +280,6 @@
   }
 
   const observer = new MutationObserver(() => {
-    injectIFlowListbtn();
     injectDeployedIFlowList();
    });
   observer.observe(document.body, { childList: true, subtree: true });
@@ -580,6 +449,7 @@ function openCpiLensOverlay() {
     <h3>Features</h3>
     <ul>
       <li>Time-based filters (1h, 6h, 12h, 24h, Today)</li>
+      <li>View mode (Individual / Group by Integration Flow name)</li>
       <li>Integration Flow name, Message Id & timestamp</li>
       <li>Direct link to CPI Message Monitor</li>
     </ul>
@@ -622,6 +492,9 @@ function openCpiLensOverlay() {
     <ul>
       <li>Status distribution with percentages</li>
       <li>Throughput KPIs for the current day</li>
+      <li>Idle iFlows</li>
+      <li>Ghosted artifacts</li>
+      <li>Runtime Artifacts</li>
       <li>CSV format compatible with Excel</li>
     </ul>
 
@@ -702,6 +575,7 @@ function openCpiLensOverlay() {
       <li>XML / JSON viewers , formatters & convertors</li>
       <li>Payload comparison</li>
       <li>Schema generatipn</li>
+      <li>X-Path tester</li>
     </ul>
     <div class="tip">
       Eliminates dependency on external tools and boosts productivity. and save leaking data to external sites.
@@ -780,7 +654,7 @@ function openCpiLensOverlay() {
   <div class="about-section">
     <h2>ℹ️ Version Information</h2>
     <div class="info-grid">
-      <div><b>Version</b></div><div>1.0.0</div>
+      <div><b>Version</b></div><div>1.1.0</div>
       <div><b>Developed by</b></div> <div> <a href="https://www.linkedin.com/in/riteek-khaul" target="_blank" rel="noopener"  style="color:#37557a;">Riteek Khaul</a></div>
       <div><b>License</b></div><div>GPL-3.0</div>
       </div>
@@ -968,7 +842,7 @@ function openCpiLensOverlay() {
         event.preventDefault(); // optional
         handleSubmit(mplId);
       } else if (event.key === "Enter" && mplId.length < 12) {
-        alert("Please enter a valid MPL Id!");
+        showToast("Please enter a valid MPL Id!");
       }
     });
 
@@ -1156,6 +1030,7 @@ function openCpiLensOverlay() {
   let __CACHED_FAILEDMSG_LOGS__ = [];
   let __FAILED_RANGE__ = 24; // default  
   let __FAILED_LAST_REFRESH__ = null;
+  let __FAILED_VIEW_MODE__ = "individual";
 
   async function fetchFailedMessages() {
     if (!failuresContent) return;
@@ -1254,12 +1129,17 @@ function openCpiLensOverlay() {
           Failed Messages
         </h3>
 
+        <select class="failures-view-mode " id="failures-view-mode" style="margin-right:10px;">
+          <option value="individual" ${!__FAILED_VIEW_MODE__ || __FAILED_VIEW_MODE__ === "individual" ? "selected" : ""}>Individual</option>
+          <option value="group" ${__FAILED_VIEW_MODE__ === "group" ? "selected" : ""}>Group By</option>
+        </select>
+
         <div style="display:flex;align-items:center;gap:12px;">
           <span class="failure-refresh-txt">
             ${refreshedText}
           </span>
 
-          <select class="failures-range">
+          <select class="failures-range" id="failures-range">
             <option value="1" ${__FAILED_RANGE__ == 1 ? "selected" : ""}>Last 1 Hour</option>
             <option value="6" ${__FAILED_RANGE__ == 6 ? "selected" : ""}>Last 6 Hours</option>
             <option value="12" ${__FAILED_RANGE__ == 12 ? "selected" : ""}>Last 12 Hours</option>
@@ -1285,9 +1165,91 @@ function openCpiLensOverlay() {
       `;
       failuresContent.innerHTML = html + `</div>`;
       bindFailedEvents();
+      // Optionally bind group/individual change
+      const viewModeSelect = document.getElementById("failures-view-mode");
+      if (viewModeSelect) {
+        viewModeSelect.addEventListener("change", (e) => {
+          __FAILED_VIEW_MODE__ = e.target.value;
+          displayFailedMessages(messageList);
+        });
+      }
       return;
     }
 
+    // Render grouped view
+    if (__FAILED_VIEW_MODE__ === "group") {
+      // group by IntegrationFlowName
+      // For each group, show: flowname, latest fail time (timestamp), number of failures, and first msg guid (for open link)
+      const groupMap = {};
+      messageList.forEach(msg => {
+        const flowName = msg.IntegrationFlowName || "Unknown";
+        if (!groupMap[flowName]) {
+          groupMap[flowName] = [];
+        }
+        groupMap[flowName].push(msg);
+      });
+
+      html += `<div class="failures-list">`;
+      Object.entries(groupMap).forEach(([flowName, msgs]) => {
+        // Sort messages DESC by LogStart (or LogEnd?) and take latest
+        msgs.sort((a, b) => {
+          // Use LogStart for timestamp, fallback to 0
+          const aTs = (() => { 
+            let m = a.LogStart?.match(/\/Date\((\d+)\)\//); 
+            return m ? parseInt(m[1], 10) : 0;
+          })();
+          const bTs = (() => { 
+            let m = b.LogStart?.match(/\/Date\((\d+)\)\//); 
+            return m ? parseInt(m[1], 10) : 0;
+          })();
+          return bTs - aTs;
+        });
+        const latestMsg = msgs[0];
+        const latestTs = (() => {
+          const match = latestMsg.LogStart?.match(/\/Date\((\d+)\)\//);
+          return match ? parseInt(match[1], 10) : null;
+        })();
+        const timeStr = latestTs ? new Date(latestTs).toLocaleString() : "Unknown time";
+        const totalFailed = msgs.length;
+
+        html += `
+          <div class="failure-item">
+            <div class="failure-item-header">
+              <strong class="failure-item-flowname">${flowName}</strong>
+              <span class="failure-item-timestamp">${timeStr}</span>
+              <span style="margin-left:16px;font-weight:normal;">Total : <b>${totalFailed}</b> </span>
+            </div>
+            <div class="failure-item-meta">
+              Most recent MessageGuid: ${latestMsg.MessageGuid || "-"}
+              ${latestMsg.MessageGuid ? `
+                <a
+                  href="${baseUrl.replace(/\/$/, "")}/shell/monitoring/Messages/%7B%22identifier%22%3A%22${latestMsg.MessageGuid}%22%7D"
+                  target="_blank"
+                  >
+                  ↗ Open
+                </a>` : ""}
+            </div>
+          </div>
+        `;
+      });
+      html += `</div></div>`;
+      failuresContent.innerHTML = html;
+
+      // Add events for filter/view mode
+      bindFailedEvents();
+
+      // Bind view mode selector
+      const viewModeSelect = document.getElementById("failures-view-mode");
+      if (viewModeSelect) {
+        viewModeSelect.addEventListener("change", (e) => {
+          __FAILED_VIEW_MODE__ = e.target.value;
+          displayFailedMessages(messageList);
+        });
+      }
+      return;
+    }
+
+    // Default: Individual list view (original logic)
     html += `<div class="failures-list">`;
 
     messageList.forEach(msg => {
@@ -1322,6 +1284,15 @@ function openCpiLensOverlay() {
     failuresContent.innerHTML = html;
 
     bindFailedEvents();
+
+    // Bind view mode selector so toggling doesn't require reload
+    const viewModeSelect = document.getElementById("failures-view-mode");
+    if (viewModeSelect) {
+      viewModeSelect.addEventListener("change", (e) => {
+        __FAILED_VIEW_MODE__ = e.target.value;
+        displayFailedMessages(messageList);
+      });
+    }
   }
 
   function bindFailedEvents() {
@@ -2053,7 +2024,7 @@ function openCpiLensOverlay() {
        THROUGHPUT (CURRENT DATE)
        ========================= */
 
-    csv += "Throughput Metrics (Current Date)\n";
+    csv += "Throughput Metrics \n";
     csv += "Metric,Value\n";
 
     if (tp) {
