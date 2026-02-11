@@ -1,4 +1,4 @@
-# CPI_Lens_Extension <img src="images/logo.png" alt="CPI Lens Logo" width="30" height="30">
+# CPI_Lens_Extension <img src="images/logo.png" alt="CPI Lens Logo" width="60" height="60">
 
 -Smart Observability and analytics for SAP CPI (Integration Suite) iFlows. 
 
