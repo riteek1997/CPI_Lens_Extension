@@ -86,7 +86,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
   
   Light Mode:
   
-  <img width="1918" height="870" alt="Screenshot 2026-01-20 111751" src="https://github.com/user-attachments/assets/d612bae9-10cc-4b12-a6ab-1e917e232645" />
+  ![CPI Lens Usage](images/lightmode.png)
 
   Dark Mode :
   
