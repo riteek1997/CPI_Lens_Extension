@@ -1,4 +1,4 @@
-# CPI_Lens_Extension
+# CPI_Lens_Extension  ![CPI Lens Logo ](images/logo.png)
 
 -Smart Observability and analytics for SAP CPI (Integration Suite) iFlows. 
 
@@ -79,7 +79,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
   Log in to the SAP Integration Suite tenant.
   Once logged in, the CPI Lens icon will appear in the bottom-right corner, as shown in the image below.
   
-  <img width="1913" height="866" alt="image" src="https://github.com/user-attachments/assets/a250e458-3efa-439f-b727-6427331bac5a" />
+  ![CPI Lens Usage](images/home.png)
 
   Click to open the Overlay, where you will be able to access all features. 
   CPI Lens is available in Light and Dark Mode.
@@ -90,19 +90,18 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 
   Dark Mode :
   
-  <img width="1913" height="865" alt="Screenshot 2026-01-20 111814" src="https://github.com/user-attachments/assets/4d749cf0-2fc1-43f9-8d24-6371c6d4c957" />
+  ![CPI Lens Usage](images/darkmode.png)
 
   Favourites :
   
-  <img width="1902" height="870" alt="image" src="https://github.com/user-attachments/assets/0953cdbc-e887-444b-82e7-5dd9c534e9ce" />
-
+  ![CPI Lens Usage](images/fav.png)
   Trends:
   
-  <img width="1902" height="862" alt="Screenshot 2026-01-20 111854" src="https://github.com/user-attachments/assets/057084fc-15a7-45bd-8212-93ad99982398" />
+  ![CPI Lens Usage](images/trends.png)
 
   Tools:
 
-  <img width="1912" height="872" alt="image" src="https://github.com/user-attachments/assets/f495c70e-8e8d-4f91-86a4-e6383486b588" />
+  ![CPI Lens Usage](images/tools.png)
 
 
 # Changelog
