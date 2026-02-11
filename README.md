@@ -6,7 +6,7 @@ CPI Lens is an open-source browser extension designed to enhance productivity, v
 
 Working with SAP CPI often involves repetitive navigation, limited runtime insights, and frequent context switching between tools. CPI Lens addresses these challenges by bringing *intuitive analytics, runtime insights, and developer utilities directly into the CPI UI*.
 
-# Data & Privacy
+# 🔒 Data & Privacy
 
 CPI Lens is designed with privacy and security as first-class principles.
  
