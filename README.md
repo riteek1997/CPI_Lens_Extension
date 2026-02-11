@@ -22,7 +22,7 @@ CPI Lens operates strictly as a read-only enhancement layer to improve visibilit
 ## 🚀 Why CPI Lens?
 
 SAP CPI is powerful, but daily development and support tasks can be time-consuming:
-- Finding failed or idle iFlows
+- Finding "ghosted" or idle iFlows
 - Tracking message processing trends
 - Managing duplicates and test artifacts
 - Switching between external tools for formatting and schema work
@@ -68,23 +68,16 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
   
 # Installation 
 
-### Option 1: Install directly from the Microsoft Store (Recommended)
-   Store Link: will be updated soon ( Updates will be installed automatically )
+### Install directly from the Chrome Web Store or Microsoft Edge Add-on 
+   Chrome Web Store: https://chromewebstore.google.com/detail/cpi-lens-sap-integration/hojcibdjgfibcpfkcgcepblnmmepinhh 
+   Edge Add-On: https://microsoftedge.microsoft.com/addons/detail/cpi-lens-sap-integration/jccgihhnjabampjlacooeejjmcbbkgjf
 
-### Option 2: Developer Mode
-   - Clone or download this repository.
-   - Open Google Chrome or Microsoft Edge.
-   - Navigate to:
-   - edge://extensions/ (Edge) or chrome://extensions/ (Chrome)
-   - Enable Developer mode
-   - Click Load unpacked.
-   - Select the root folder of the cloned/downloaded repository.
-   - ✅ CPI Lens is now installed and ready to use.
-
+   - Updates will be installed automatically.
+   
 # Usage 
   Open your browser (Chrome/Edge)
   Log in to the SAP Integration Suite tenant.
-  Once logged in, the CPI Lens icon will appear in the bottom right corner as shown in the below image.
+  Once logged in, the CPI Lens icon will appear in the bottom-right corner, as shown in the image below.
   
   <img width="1913" height="866" alt="image" src="https://github.com/user-attachments/assets/a250e458-3efa-439f-b727-6427331bac5a" />
 
@@ -131,7 +124,4 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 
 🛠️ Built-in utilities (formatters, converters, schema tools)
 
-
-# License
-This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
