@@ -64,6 +64,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 - XML / JSON formatters
 - Payload converters
 - XSD generator
+- X-Path Tester
 - No need to leave the CPI UI
   
 # Installation 
@@ -105,6 +106,15 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 
 
 # Changelog
+
+### v1.1.0 
+- [Feature] Environment Badge (Trail/Dev/Qa/Prod)
+- [Feature] Excel Export for Runtime, Ghosted, Idle iFlows
+- [Feature] X-Path Tester
+- [Feature] Failure Messages- Group By Filter
+- [Enhancement] Expiry-based sorting for Cert/Keys
+- [Feature] iFlow health insights ( counts for - Active, At risk, idle iFlows)
+
 ### v1.0.0 – First Public Release
 
 🧭 Quick tenant identification with clear visual indicators
