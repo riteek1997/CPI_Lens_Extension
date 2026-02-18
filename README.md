@@ -107,6 +107,12 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 
 # Changelog
 
+### v1.2.0 
+- [Feature] Groovy Script Simulator
+- [Feature] XSLT Simulator
+- [Feature] X-Path Extractor/Picker
+- [Enhancement] Idle IFlow range update for active, At Risk and idle categories
+  
 ### v1.1.0 
 - [Feature] Environment Badge (Trail/Dev/Qa/Prod)
 - [Feature] Excel Export for Runtime, Ghosted, Idle iFlows
