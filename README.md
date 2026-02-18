@@ -62,11 +62,10 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 
 ### 🧪 Simulators
 The Simulators feature allows you to replicate, validate, and troubleshoot scenarios in a safe environment before deployment.
-
-Test integration flow steps with custom payloads
-Simulate processing without affecting real data
-Validate mappings and scripts
-Preview output and debug issues interactively
+- Test integration flow steps with custom payloads
+- Simulate processing without affecting real data
+- Validate mappings and scripts
+- Preview output and debug issues interactively
 
 ### 🧰 Built-in Tools
 - XML / JSON formatters
