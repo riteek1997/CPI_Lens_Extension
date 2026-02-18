@@ -60,6 +60,14 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 - Message Processing Log (MPL) trends
 - Spot anomalies, spikes, or recurring patterns early
 
+### 🧪 Simulators
+The Simulators feature allows you to replicate, validate, and troubleshoot scenarios in a safe environment before deployment.
+
+Test integration flow steps with custom payloads
+Simulate processing without affecting real data
+Validate mappings and scripts
+Preview output and debug issues interactively
+
 ### 🧰 Built-in Tools
 - XML / JSON formatters
 - Payload converters
