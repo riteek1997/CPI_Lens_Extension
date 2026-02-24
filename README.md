@@ -114,6 +114,10 @@ The Simulators feature allows you to replicate, validate, and troubleshoot scena
 
 # Changelog
 
+### v1.2.1 
+- [Enhancement] Message Processing Logs Improvement
+- [Enhancement] UI Enhancements Across Built-in Tools
+  
 ### v1.2.0 
 - [Feature] Groovy Script Simulator
 - [Feature] XSLT Simulator
