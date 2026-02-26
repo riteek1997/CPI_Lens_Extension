@@ -58,6 +58,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 
 ### 📈 Trends (MPL)
 - Message Processing Log (MPL) trends
+- Top 3 Consumer Iflows
 - Spot anomalies, spikes, or recurring patterns early
 
 ### 🧪 Simulators
