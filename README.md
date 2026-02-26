@@ -114,6 +114,11 @@ The Simulators feature allows you to replicate, validate, and troubleshoot scena
 
 # Changelog
 
+### v1.3.0
+- [Feature] Top 3 Consumer IFlows
+- [Feature] Value mapping Simulator with CSV import
+- [Enhancement] UI improvement for responsiveness across screen sizes
+
 ### v1.2.1 
 - [Enhancement] Message Processing Logs Improvement
 - [Enhancement] UI Enhancements Across Built-in Tools
