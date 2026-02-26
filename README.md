@@ -70,9 +70,9 @@ The Simulators feature allows you to replicate, validate, and troubleshoot scena
 
 ### 🧰 Built-in Tools
 - XML / JSON formatters
-- Payload converters
+- Payload converters (XML <-> JSON)
 - XSD generator
-- X-Path Tester
+- X-Path Picker & Tester
 - No need to leave the CPI UI
   
 # Installation 
