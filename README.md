@@ -1,8 +1,8 @@
 # CPI_Lens_Extension
 
--Smart Observability and analytics for SAP CPI (Integration Suite) iFlows. 
+-Smart Observability, analytics and productivity tools for SAP CPI (Integration Suite) iFlows. 
 
-CPI Lens is an open-source browser extension designed to enhance productivity, visibility, and operational efficiency for SAP CPI (Integration Suite) developers and support teams.
+CPI Lens is a browser extension designed to enhance productivity, visibility, and operational efficiency for SAP CPI (Integration Suite) developers and support teams.
 
 Working with SAP CPI often involves repetitive navigation, limited runtime insights, and frequent context switching between tools. CPI Lens addresses these challenges by bringing *intuitive analytics, runtime insights, and developer utilities directly into the CPI UI*.
 
@@ -16,7 +16,7 @@ CPI Lens is designed with privacy and security as first-class principles.
  - The extension does not track user activity and does not use analytics, telemetry, or advertising scripts.
  - CPI Lens does not modify, persist, or write back any data to SAP systems.
  - No personal data is collected, shared, or sold.
-- No cookies or persistent identifiers are used outside of optional local browser storage for user preferences.
+ - No cookies or persistent identifiers are used outside of optional local browser storage for user preferences.
 CPI Lens operates strictly as a read-only enhancement layer to improve visibility and usability within the SAP CPI user interface.
 
 ## 🚀 Why CPI Lens?
@@ -34,7 +34,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 # ✨ Key Features
 
 ### 📊 Intuitive Analytics
-- High-level insights into tenant usage and activity
+- High-level insights into tenant usage and activities (message processing)
 - Helps understand system behavior quickly
 
 ### ❌ Failures
@@ -44,6 +44,7 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 ### ⭐ Favourites
 - Bookmark important iFlows
 - One-click access to business-critical integrations
+- Quick message Summery
 
 ### 👻Ghosted Artifacts
 - Identify iFlows that exist only in runtime but have no corresponding design-time artifact available for updates.
@@ -59,13 +60,14 @@ CPI Lens reduces this friction by surfacing *critical information instantly*, he
 ### 📈 Trends (MPL)
 - Message Processing Log (MPL) trends
 - Top 3 Consumer Iflows
+- 24h rolling message heatmap
 - Spot anomalies, spikes, or recurring patterns early
 
 ### 🧪 Simulators
 The Simulators feature allows you to replicate, validate, and troubleshoot scenarios in a safe environment before deployment.
 - Test integration flow steps with custom payloads
 - Simulate processing without affecting real data
-- Validate message mappings, value mapping (csv import) and groovy scripts
+- Validate XSLT mappings, value mapping (csv import) and groovy scripts
 - Preview output and debug issues interactively
 
 ### 🧰 Built-in Tools
@@ -73,6 +75,7 @@ The Simulators feature allows you to replicate, validate, and troubleshoot scena
 - Payload converters (XML <-> JSON)
 - XSD generator
 - X-Path Picker & Tester
+- Technical Specification generator
 - No need to leave the CPI UI
   
 # Installation 
@@ -115,9 +118,17 @@ The Simulators feature allows you to replicate, validate, and troubleshoot scena
 
 # Changelog
 
-### v1.3.0
+### v2.0.0
 - [Feature] Top 3 Consumer IFlows
 - [Feature] Value mapping Simulator with CSV import
+- [Feature] 24h rolling Heatmap for completed messeges
+- [Feature] Annoucement panal with version history
+- [Enhacement] Namespace support for XPath picker/tester
+- [bug] XSLT Simulator bug fix
+
+### v1.3.0
+- [Feature] Technical Specification generator
+- [Feature] Quick Message Summery for favorites
 - [Enhancement] UI improvement for responsiveness across screen sizes
 
 ### v1.2.1 
