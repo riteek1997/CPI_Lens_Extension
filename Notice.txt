@@ -1,6 +1,3 @@
-## 🔐 Source Code
-
-The CPI Lens source code is currently maintained privately to protect against unauthorized duplication and distribution.
 
 **This public repository serves as:**
 - 🐛 Bug reporting platform
